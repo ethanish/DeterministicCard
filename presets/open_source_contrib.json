@@ -1,0 +1,26 @@
+{
+  "id": "oss-contribution",
+  "name": "Open Source Contribution",
+  "domain": "oss",
+  "capture_modes": ["text"],
+
+  "fields": [
+    { "key": "commits", "type": "number" },
+    { "key": "reviews", "type": "number" },
+    { "key": "reflection", "type": "string", "optional": true }
+  ],
+
+  "metrics": [
+    {
+      "key": "total_activity",
+      "formula": "sum(commits, reviews)",
+      "display": "Total contribution activity"
+    }
+  ],
+
+  "sdt_support": {
+    "autonomy": "Users decide which metrics matter",
+    "competence": "Tracks contribution trends",
+    "relatedness": "Community contribution awareness"
+  }
+}

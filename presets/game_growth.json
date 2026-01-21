@@ -1,0 +1,24 @@
+{
+  "id": "game-growth-basic",
+  "name": "Game Growth Template",
+  "domain": "game",
+  "description": "Player-defined growth metrics for games",
+  "capture_modes": ["button", "voice"],
+  "fields": [
+    { "key": "session_length", "type": "number", "label": "Session Length (min)" },
+    { "key": "difficulty", "type": "number", "label": "Chosen Difficulty" },
+    { "key": "reflection", "type": "string", "label": "Reflection", "optional": true }
+  ],
+  "metrics": [
+    {
+      "key": "avg_difficulty",
+      "formula": "average(difficulty)",
+      "display": "Average chosen difficulty"
+    }
+  ],
+  "sdt_support": {
+    "autonomy": "Player chooses difficulty and meaning of progress",
+    "competence": "Shows mastery trend over time",
+    "relatedness": "Optional sharing of reflections"
+  }
+}

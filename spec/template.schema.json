@@ -1,0 +1,64 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "SDT Template Specification",
+    "type": "object",
+    "required": ["id", "name", "domain", "fields"],
+    "properties": {
+      "id": { "type": "string" },
+      "name": { "type": "string" },
+      "domain": {
+        "type": "string",
+        "enum": ["game", "oss", "learning", "habit", "custom"]
+      },
+      "description": { "type": "string" },
+  
+      "capture_modes": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": ["text", "voice", "button", "auto"]
+        },
+        "default": ["text"]
+      },
+  
+      "fields": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["key", "type"],
+          "properties": {
+            "key": { "type": "string" },
+            "type": {
+              "type": "string",
+              "enum": ["number", "string", "boolean", "enum"]
+            },
+            "label": { "type": "string" },
+            "optional": { "type": "boolean", "default": true }
+          }
+        }
+      },
+  
+      "metrics": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["key"],
+          "properties": {
+            "key": { "type": "string" },
+            "formula": { "type": "string" },
+            "display": { "type": "string" }
+          }
+        }
+      },
+  
+      "sdt_support": {
+        "type": "object",
+        "properties": {
+          "autonomy": { "type": "string" },
+          "competence": { "type": "string" },
+          "relatedness": { "type": "string" }
+        }
+      }
+    }
+  }
+  
