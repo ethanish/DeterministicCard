@@ -1,0 +1,40 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "SDT Agent Specification",
+    "type": "object",
+    "required": ["id", "name", "template_id"],
+    "properties": {
+      "id": { "type": "string" },
+      "name": { "type": "string" },
+      "template_id": { "type": "string" },
+      "description": { "type": "string" },
+      
+      "capabilities": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["capture", "suggest", "remind", "analyze", "custom"]
+            },
+            "field": { "type": "string" },
+            "trigger": { "type": "string" },
+            "config": { "type": "object" }
+          }
+        }
+      },
+      
+      "sdt_support": {
+        "type": "object",
+        "properties": {
+          "autonomy": { "type": "string" },
+          "competence": { "type": "string" },
+          "relatedness": { "type": "string" }
+        }
+      },
+      
+      "enabled": { "type": "boolean", "default": true }
+    }
+  }

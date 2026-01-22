@@ -81,3 +81,8 @@ def validate_template(template_obj: Any, *, spec_dir: Optional[str | Path] = Non
 def validate_rule(rule_obj: Any, *, spec_dir: Optional[str | Path] = None) -> None:
     schema = _load_schema("rule.schema.json", Path(spec_dir) if spec_dir else None)
     _validate(rule_obj, schema, "Rule")
+
+
+def validate_agent(agent_obj: Any, *, spec_dir: Optional[str | Path] = None) -> None:
+    schema = _load_schema("agent.schema.json", Path(spec_dir) if spec_dir else None)
+    _validate(agent_obj, schema, "Agent")

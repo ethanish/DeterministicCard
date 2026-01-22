@@ -9,17 +9,18 @@ from .validator import (
     load_json_file,
     validate_rule,
     validate_template,
+    validate_agent,
 )
 
 
 def _build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         prog="sdt-validate",
-        description="Validate SDT template/rule JSON files against the spec schemas.",
+        description="Validate SDT template/rule/agent JSON files against the spec schemas.",
     )
     p.add_argument(
         "kind",
-        choices=["template", "rule"],
+        choices=["template", "rule", "agent"],
         help="Type of JSON to validate.",
     )
     p.add_argument(
@@ -29,7 +30,7 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument(
         "--spec-dir",
         default=None,
-        help="Path to spec directory containing template.schema.json and rule.schema.json. "
+        help="Path to spec directory containing template.schema.json, rule.schema.json, and agent.schema.json. "
              "Overrides SDT_SPEC_DIR if provided.",
     )
     return p
@@ -48,8 +49,10 @@ def main(argv: list[str] | None = None) -> None:
         obj = load_json_file(json_path)
         if args.kind == "template":
             validate_template(obj, spec_dir=args.spec_dir)
-        else:
+        elif args.kind == "rule":
             validate_rule(obj, spec_dir=args.spec_dir)
+        else:  # agent
+            validate_agent(obj, spec_dir=args.spec_dir)
 
         print("OK")
     except ValidationError as e:

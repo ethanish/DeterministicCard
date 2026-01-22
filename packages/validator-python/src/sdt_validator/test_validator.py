@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from sdt_validator import validate_template, validate_rule, load_json_file, ValidationError
+from sdt_validator import validate_template, validate_rule, validate_agent, load_json_file, ValidationError
 
 
 def test_validate_game_growth_template_from_presets():
@@ -26,3 +26,36 @@ def test_invalid_rule_missing_conditions():
     bad = {"id": "r1", "template_id": "t1", "enabled": True}
     with pytest.raises(ValidationError):
         validate_rule(bad)
+
+
+def test_valid_agent_minimal():
+    agent = {
+        "id": "agent1",
+        "name": "Test Agent",
+        "template_id": "game-growth-basic"
+    }
+    validate_agent(agent)
+
+
+def test_valid_agent_with_capabilities():
+    agent = {
+        "id": "agent1",
+        "name": "Test Agent",
+        "template_id": "game-growth-basic",
+        "description": "An agent that helps capture data",
+        "capabilities": [
+            {
+                "type": "capture",
+                "field": "session_length",
+                "trigger": "on_session_end"
+            }
+        ],
+        "enabled": True
+    }
+    validate_agent(agent)
+
+
+def test_invalid_agent_missing_required_fields():
+    bad = {"id": "a1", "name": "Bad"}  # missing template_id
+    with pytest.raises(ValidationError):
+        validate_agent(bad)

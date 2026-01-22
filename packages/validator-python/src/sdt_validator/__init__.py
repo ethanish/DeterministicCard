@@ -3,6 +3,7 @@ from .validator import (
     load_json_file,
     validate_template,
     validate_rule,
+    validate_agent,
 )
 
 __all__ = [
@@ -10,4 +11,5 @@ __all__ = [
     "load_json_file",
     "validate_template",
     "validate_rule",
+    "validate_agent",
 ]
