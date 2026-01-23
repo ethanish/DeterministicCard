@@ -12,26 +12,124 @@
       "capabilities": {
         "type": "array",
         "items": {
-          "type": "object",
-          "required": ["type"],
-          "properties": {
-            "type": {
-              "type": "string",
-              "enum": ["capture", "suggest", "remind", "analyze", "custom"]
+          "oneOf": [
+            {
+              "type": "object",
+              "required": ["type", "field"],
+              "properties": {
+                "type": { "const": "capture" },
+                "field": { "type": "string" },
+                "trigger": {
+                  "type": "string",
+                  "enum": ["on_session_end", "on_field_change", "on_time_interval", "manual", "on_condition_met"],
+                  "default": "manual"
+                },
+                "config": {
+                  "type": "object",
+                  "properties": {
+                    "source": { "type": "string" },
+                    "format": {
+                      "type": "string",
+                      "enum": ["text", "voice", "button", "auto"]
+                    }
+                  }
+                }
+              }
             },
-            "field": { "type": "string" },
-            "trigger": { "type": "string" },
-            "config": { "type": "object" }
-          }
+            {
+              "type": "object",
+              "required": ["type"],
+              "properties": {
+                "type": { "const": "suggest" },
+                "field": { "type": "string" },
+                "trigger": {
+                  "type": "string",
+                  "enum": ["on_field_change", "on_time_interval", "manual", "on_condition_met"],
+                  "default": "manual"
+                },
+                "config": {
+                  "type": "object",
+                  "properties": {
+                    "context": {
+                      "type": "array",
+                      "items": { "type": "string" }
+                    },
+                    "max_suggestions": { "type": "number", "minimum": 1 }
+                  }
+                }
+              }
+            },
+            {
+              "type": "object",
+              "required": ["type", "trigger"],
+              "properties": {
+                "type": { "const": "remind" },
+                "field": { "type": "string" },
+                "trigger": {
+                  "type": "string",
+                  "enum": ["on_time_interval", "on_condition_met", "manual"]
+                },
+                "config": {
+                  "type": "object",
+                  "properties": {
+                    "interval": { "type": "string" },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            },
+            {
+              "type": "object",
+              "required": ["type"],
+              "properties": {
+                "type": { "const": "analyze" },
+                "field": { "type": "string" },
+                "trigger": {
+                  "type": "string",
+                  "enum": ["on_field_change", "on_time_interval", "manual", "on_condition_met"],
+                  "default": "manual"
+                },
+                "config": {
+                  "type": "object",
+                  "properties": {
+                    "model": { "type": "string" },
+                    "parameters": { "type": "object" }
+                  }
+                }
+              }
+            },
+            {
+              "type": "object",
+              "required": ["type"],
+              "properties": {
+                "type": { "const": "custom" },
+                "field": { "type": "string" },
+                "trigger": {
+                  "type": "string",
+                  "enum": ["on_session_end", "on_field_change", "on_time_interval", "manual", "on_condition_met"]
+                },
+                "config": { "type": "object" }
+              }
+            }
+          ]
         }
       },
       
       "sdt_support": {
         "type": "object",
         "properties": {
-          "autonomy": { "type": "string" },
-          "competence": { "type": "string" },
-          "relatedness": { "type": "string" }
+          "autonomy": {
+            "type": "string",
+            "description": "Description of how the agent supports user autonomy. Can be a URL or descriptive text."
+          },
+          "competence": {
+            "type": "string",
+            "description": "Description of how the agent supports user competence. Can be a URL or descriptive text."
+          },
+          "relatedness": {
+            "type": "string",
+            "description": "Description of how the agent supports user relatedness. Can be a URL or descriptive text."
+          }
         }
       },
       

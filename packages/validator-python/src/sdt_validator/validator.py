@@ -83,6 +83,75 @@ def validate_rule(rule_obj: Any, *, spec_dir: Optional[str | Path] = None) -> No
     _validate(rule_obj, schema, "Rule")
 
 
-def validate_agent(agent_obj: Any, *, spec_dir: Optional[str | Path] = None) -> None:
+def validate_agent(
+    agent_obj: Any,
+    *,
+    template_obj: Optional[Any] = None,
+    spec_dir: Optional[str | Path] = None
+) -> None:
+    """
+    Validate an agent object against the agent schema.
+    
+    Args:
+        agent_obj: The agent object to validate
+        template_obj: Optional template object for cross-reference validation.
+                     If provided, validates that template_id exists and
+                     capabilities reference valid fields.
+        spec_dir: Optional path to spec directory containing schemas
+    """
     schema = _load_schema("agent.schema.json", Path(spec_dir) if spec_dir else None)
     _validate(agent_obj, schema, "Agent")
+    
+    # Cross-reference validation if template is provided
+    if template_obj is not None:
+        _validate_agent_references(agent_obj, template_obj)
+
+
+def _validate_agent_references(agent_obj: Any, template_obj: Any) -> None:
+    """
+    Validate cross-references between agent and template.
+    
+    - Validates that agent.template_id matches template.id
+    - Validates that capabilities[].field exists in template.fields[].key
+    """
+    errors: list[str] = []
+    
+    # Validate template_id reference
+    agent_template_id = agent_obj.get("template_id")
+    template_id = template_obj.get("id")
+    
+    if agent_template_id != template_id:
+        errors.append(
+            f"Agent references template_id '{agent_template_id}', "
+            f"but provided template has id '{template_id}'"
+        )
+    
+    # Build set of valid field keys from template
+    template_fields = template_obj.get("fields", [])
+    valid_field_keys = {field.get("key") for field in template_fields if field.get("key")}
+    
+    # Validate capabilities field references
+    capabilities = agent_obj.get("capabilities", [])
+    for idx, capability in enumerate(capabilities):
+        field = capability.get("field")
+        if field is not None:
+            if field not in valid_field_keys:
+                errors.append(
+                    f"Capability[{idx}].field '{field}' does not exist in template. "
+                    f"Available fields: {sorted(valid_field_keys) if valid_field_keys else 'none'}"
+                )
+    
+    # Validate SDT support consistency (optional check)
+    agent_sdt = agent_obj.get("sdt_support")
+    template_sdt = template_obj.get("sdt_support")
+    
+    if agent_sdt and template_sdt:
+        # Check if agent defines SDT support but template doesn't have corresponding values
+        # This is a warning-level check, but we'll include it as an error for consistency
+        for key in ["autonomy", "competence", "relatedness"]:
+            if key in agent_sdt and key not in template_sdt:
+                # This is informational - agent can extend template's SDT support
+                pass
+    
+    if errors:
+        raise ValidationError("Agent failed cross-reference validation.", errors)

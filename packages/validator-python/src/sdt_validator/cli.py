@@ -33,6 +33,11 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Path to spec directory containing template.schema.json, rule.schema.json, and agent.schema.json. "
              "Overrides SDT_SPEC_DIR if provided.",
     )
+    p.add_argument(
+        "--template",
+        default=None,
+        help="Path to template JSON file for cross-reference validation (only used when validating agents).",
+    )
     return p
 
 
@@ -52,7 +57,14 @@ def main(argv: list[str] | None = None) -> None:
         elif args.kind == "rule":
             validate_rule(obj, spec_dir=args.spec_dir)
         else:  # agent
-            validate_agent(obj, spec_dir=args.spec_dir)
+            template_obj = None
+            if args.template:
+                template_path = Path(args.template)
+                if not template_path.exists():
+                    print(f"Template file not found: {template_path}", file=sys.stderr)
+                    raise SystemExit(2)
+                template_obj = load_json_file(template_path)
+            validate_agent(obj, template_obj=template_obj, spec_dir=args.spec_dir)
 
         print("OK")
     except ValidationError as e:
