@@ -20,6 +20,7 @@ dev = [
 
 [project.scripts]
 sdt-validate = "sdt_validator.cli:main"
+sdt-prepare-agent = "sdt_validator.prepare_agent:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
