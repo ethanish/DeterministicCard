@@ -1,4 +1,5 @@
 {
+  "schema_version": "0.1.0",
   "id": "habit-agent",
   "name": "Habit Companion",
   "template_id": "habit-tracker",

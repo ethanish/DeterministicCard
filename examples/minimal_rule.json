@@ -1,4 +1,5 @@
 {
+  "schema_version": "0.1.0",
   "id": "learning-basic-rule-1",
   "template_id": "learning-basic",
   "enabled": false,

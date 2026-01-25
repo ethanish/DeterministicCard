@@ -1,4 +1,5 @@
 {
+  "schema_version": "0.1.0",
   "id": "game-growth-basic",
   "name": "Game Growth Template",
   "domain": "game",

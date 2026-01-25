@@ -1,11 +1,13 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "template.schema.json",
     "title": "SDT Template Specification",
     "type": "object",
-    "required": ["id", "name", "domain", "fields"],
+    "required": ["schema_version", "id", "name", "domain", "fields"],
     "properties": {
-      "id": { "type": "string" },
-      "name": { "type": "string" },
+      "schema_version": { "$ref": "common.schema.json#/$defs/schema_version" },
+      "id": { "$ref": "common.schema.json#/$defs/id" },
+      "name": { "$ref": "common.schema.json#/$defs/name" },
       "domain": {
         "type": "string",
         "enum": ["game", "oss", "learning", "habit", "custom"]
@@ -51,14 +53,7 @@
         }
       },
   
-      "sdt_support": {
-        "type": "object",
-        "properties": {
-          "autonomy": { "type": "string" },
-          "competence": { "type": "string" },
-          "relatedness": { "type": "string" }
-        }
-      }
+      "sdt_support": { "$ref": "common.schema.json#/$defs/sdt_support" }
     }
   }
   

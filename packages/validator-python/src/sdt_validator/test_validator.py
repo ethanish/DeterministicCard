@@ -30,6 +30,7 @@ def test_invalid_rule_missing_conditions():
 
 def test_valid_agent_minimal():
     agent = {
+        "schema_version": "0.1.0",
         "id": "agent1",
         "name": "Test Agent",
         "template_id": "game-growth-basic"
@@ -39,6 +40,7 @@ def test_valid_agent_minimal():
 
 def test_valid_agent_with_capabilities():
     agent = {
+        "schema_version": "0.1.0",
         "id": "agent1",
         "name": "Test Agent",
         "template_id": "game-growth-basic",
@@ -56,7 +58,7 @@ def test_valid_agent_with_capabilities():
 
 
 def test_invalid_agent_missing_required_fields():
-    bad = {"id": "a1", "name": "Bad"}  # missing template_id
+    bad = {"schema_version": "0.1.0", "id": "a1", "name": "Bad"}  # missing template_id
     with pytest.raises(ValidationError):
         validate_agent(bad)
 
@@ -65,6 +67,7 @@ def test_valid_agent_cross_reference():
     """Test cross-reference validation with valid template"""
     template = load_json_file("presets/game_growth.json")
     agent = {
+        "schema_version": "0.1.0",
         "id": "agent1",
         "name": "Test Agent",
         "template_id": "game-growth-basic",
@@ -88,6 +91,7 @@ def test_invalid_agent_template_id_mismatch():
     """Test that agent with wrong template_id fails validation"""
     template = load_json_file("presets/game_growth.json")
     agent = {
+        "schema_version": "0.1.0",
         "id": "agent1",
         "name": "Test Agent",
         "template_id": "wrong-template-id",
@@ -102,6 +106,7 @@ def test_invalid_agent_field_not_in_template():
     """Test that agent with invalid field reference fails validation"""
     template = load_json_file("presets/game_growth.json")
     agent = {
+        "schema_version": "0.1.0",
         "id": "agent1",
         "name": "Test Agent",
         "template_id": "game-growth-basic",
@@ -121,6 +126,7 @@ def test_invalid_agent_field_not_in_template():
 def test_valid_agent_capability_types():
     """Test all capability types with proper configs"""
     agent = {
+        "schema_version": "0.1.0",
         "id": "agent1",
         "name": "Test Agent",
         "template_id": "game-growth-basic",
@@ -177,6 +183,7 @@ def test_valid_agent_capability_types():
 def test_invalid_agent_invalid_trigger():
     """Test that invalid trigger enum value fails validation"""
     agent = {
+        "schema_version": "0.1.0",
         "id": "agent1",
         "name": "Test Agent",
         "template_id": "game-growth-basic",
@@ -195,6 +202,7 @@ def test_invalid_agent_invalid_trigger():
 def test_invalid_agent_capture_missing_field():
     """Test that capture capability requires field"""
     agent = {
+        "schema_version": "0.1.0",
         "id": "agent1",
         "name": "Test Agent",
         "template_id": "game-growth-basic",
@@ -213,6 +221,7 @@ def test_invalid_agent_capture_missing_field():
 def test_invalid_agent_remind_missing_trigger():
     """Test that remind capability requires trigger"""
     agent = {
+        "schema_version": "0.1.0",
         "id": "agent1",
         "name": "Test Agent",
         "template_id": "game-growth-basic",
@@ -231,6 +240,7 @@ def test_invalid_agent_remind_missing_trigger():
 def test_valid_agent_sdt_support():
     """Test agent with SDT support values"""
     agent = {
+        "schema_version": "0.1.0",
         "id": "agent1",
         "name": "Test Agent",
         "template_id": "game-growth-basic",
@@ -247,6 +257,7 @@ def test_valid_agent_with_template_sdt_consistency():
     """Test agent SDT support with template (should not error)"""
     template = load_json_file("presets/game_growth.json")
     agent = {
+        "schema_version": "0.1.0",
         "id": "agent1",
         "name": "Test Agent",
         "template_id": "game-growth-basic",

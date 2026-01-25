@@ -1,4 +1,5 @@
 {
+  "schema_version": "0.1.0",
   "id": "habit-streak-7",
   "template_id": "habit-tracker",
   "enabled": true,

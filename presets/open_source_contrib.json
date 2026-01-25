@@ -1,4 +1,5 @@
 {
+  "schema_version": "0.1.0",
   "id": "oss-contribution",
   "name": "Open Source Contribution",
   "domain": "oss",

@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "common.schema.json",
+  "title": "SDT Common Definitions",
+  "$defs": {
+    "schema_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "Semantic version of the SDT schema."
+    },
+    "id": { "type": "string" },
+    "name": { "type": "string" },
+    "sdt_support": {
+      "type": "object",
+      "properties": {
+        "autonomy": {
+          "type": "string",
+          "description": "Description of how the template or agent supports user autonomy."
+        },
+        "competence": {
+          "type": "string",
+          "description": "Description of how the template or agent supports user competence."
+        },
+        "relatedness": {
+          "type": "string",
+          "description": "Description of how the template or agent supports user relatedness."
+        }
+      }
+    }
+  }
+}

@@ -1,11 +1,13 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "agent.schema.json",
     "title": "SDT Agent Specification",
     "type": "object",
-    "required": ["id", "name", "template_id"],
+    "required": ["schema_version", "id", "name", "template_id"],
     "properties": {
-      "id": { "type": "string" },
-      "name": { "type": "string" },
+      "schema_version": { "$ref": "common.schema.json#/$defs/schema_version" },
+      "id": { "$ref": "common.schema.json#/$defs/id" },
+      "name": { "$ref": "common.schema.json#/$defs/name" },
       "template_id": { "type": "string" },
       "description": { "type": "string" },
       
@@ -115,23 +117,7 @@
         }
       },
       
-      "sdt_support": {
-        "type": "object",
-        "properties": {
-          "autonomy": {
-            "type": "string",
-            "description": "Description of how the agent supports user autonomy. Can be a URL or descriptive text."
-          },
-          "competence": {
-            "type": "string",
-            "description": "Description of how the agent supports user competence. Can be a URL or descriptive text."
-          },
-          "relatedness": {
-            "type": "string",
-            "description": "Description of how the agent supports user relatedness. Can be a URL or descriptive text."
-          }
-        }
-      },
+      "sdt_support": { "$ref": "common.schema.json#/$defs/sdt_support" },
       
       "enabled": { "type": "boolean", "default": true }
     }

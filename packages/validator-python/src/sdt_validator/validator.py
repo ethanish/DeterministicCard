@@ -6,7 +6,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, Optional
 
-from jsonschema import Draft7Validator
+from jsonschema import Draft202012Validator
+from referencing import Registry, Resource
 
 
 @dataclass
@@ -36,7 +37,19 @@ def _default_spec_dir() -> Path:
     return (Path.cwd() / "spec").resolve()
 
 
-def _load_schema(schema_filename: str, spec_dir: Optional[Path] = None) -> Dict[str, Any]:
+def _build_registry(spec_dir: Path) -> Registry:
+    resources: dict[str, Resource] = {}
+    for schema_path in spec_dir.glob("*.json"):
+        with schema_path.open("r", encoding="utf-8") as f:
+            schema = json.load(f)
+        schema_id = schema.get("$id") or schema_path.name
+        resources[schema_id] = Resource.from_contents(schema)
+    return Registry().with_resources(resources.items())
+
+
+def _load_schema(
+    schema_filename: str, spec_dir: Optional[Path] = None
+) -> tuple[Dict[str, Any], Registry]:
     spec_dir = spec_dir or _default_spec_dir()
     schema_path = spec_dir / schema_filename
     if not schema_path.exists():
@@ -45,7 +58,9 @@ def _load_schema(schema_filename: str, spec_dir: Optional[Path] = None) -> Dict[
             f"Set SDT_SPEC_DIR or run from repo root so ./spec exists."
         )
     with schema_path.open("r", encoding="utf-8") as f:
-        return json.load(f)
+        schema = json.load(f)
+    registry = _build_registry(spec_dir)
+    return schema, registry
 
 
 def load_json_file(path: str | Path) -> Any:
@@ -54,8 +69,8 @@ def load_json_file(path: str | Path) -> Any:
         return json.load(f)
 
 
-def _validate(obj: Any, schema: Dict[str, Any], label: str) -> None:
-    validator = Draft7Validator(schema)
+def _validate(obj: Any, schema: Dict[str, Any], label: str, registry: Registry) -> None:
+    validator = Draft202012Validator(schema, registry=registry)
     errors = sorted(validator.iter_errors(obj), key=lambda e: list(e.path))
 
     if errors:
@@ -74,13 +89,13 @@ def _validate(obj: Any, schema: Dict[str, Any], label: str) -> None:
 
 
 def validate_template(template_obj: Any, *, spec_dir: Optional[str | Path] = None) -> None:
-    schema = _load_schema("template.schema.json", Path(spec_dir) if spec_dir else None)
-    _validate(template_obj, schema, "Template")
+    schema, registry = _load_schema("template.schema.json", Path(spec_dir) if spec_dir else None)
+    _validate(template_obj, schema, "Template", registry)
 
 
 def validate_rule(rule_obj: Any, *, spec_dir: Optional[str | Path] = None) -> None:
-    schema = _load_schema("rule.schema.json", Path(spec_dir) if spec_dir else None)
-    _validate(rule_obj, schema, "Rule")
+    schema, registry = _load_schema("rule.schema.json", Path(spec_dir) if spec_dir else None)
+    _validate(rule_obj, schema, "Rule", registry)
 
 
 def validate_agent(
@@ -99,8 +114,8 @@ def validate_agent(
                      capabilities reference valid fields.
         spec_dir: Optional path to spec directory containing schemas
     """
-    schema = _load_schema("agent.schema.json", Path(spec_dir) if spec_dir else None)
-    _validate(agent_obj, schema, "Agent")
+    schema, registry = _load_schema("agent.schema.json", Path(spec_dir) if spec_dir else None)
+    _validate(agent_obj, schema, "Agent", registry)
     
     # Cross-reference validation if template is provided
     if template_obj is not None:
