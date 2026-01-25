@@ -1,0 +1,14 @@
+{
+  "id": "habit-streak-7",
+  "template_id": "habit-tracker",
+  "enabled": true,
+  "conditions": [
+    { "type": "streak", "field": "did", "value": 7 }
+  ],
+  "effects": [
+    {
+      "type": "nudge",
+      "message": "7-day streak! Consider reflecting on what helped."
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "id": "habit-agent",
+  "name": "Habit Companion",
+  "template_id": "habit-tracker",
+  "description": "Helps capture habits and send gentle reminders.",
+  "capabilities": [
+    {
+      "type": "capture",
+      "field": "did",
+      "trigger": "on_session_end",
+      "config": { "source": "ui", "format": "button" }
+    },
+    {
+      "type": "suggest",
+      "field": "habit",
+      "trigger": "manual",
+      "config": { "context": ["habit"], "max_suggestions": 3 }
+    },
+    {
+      "type": "remind",
+      "field": "habit",
+      "trigger": "on_time_interval",
+      "config": { "interval": "daily", "message": "Log today's habit when you're ready." }
+    },
+    {
+      "type": "analyze",
+      "field": "did",
+      "trigger": "on_time_interval",
+      "config": { "model": "trend_summary", "parameters": {} }
+    }
+  ],
+  "sdt_support": {
+    "autonomy": "Users can edit reminder timing and disable any capability.",
+    "competence": "Summaries focus on user-defined trends.",
+    "relatedness": "No sharing is enabled by default."
+  },
+  "enabled": true
+}

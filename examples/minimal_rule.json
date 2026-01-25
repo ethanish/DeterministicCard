@@ -1,0 +1,8 @@
+{
+  "id": "learning-basic-rule-1",
+  "template_id": "learning-basic",
+  "enabled": false,
+  "conditions": [
+    { "type": "count", "field": "topic", "value": 1 }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "id": "habit-tracker",
+  "name": "Habit Tracker",
+  "domain": "habit",
+  "description": "Tracks daily habits with optional mood and notes.",
+  "capture_modes": ["text", "button"],
+  "fields": [
+    { "key": "habit", "type": "string", "label": "Habit" },
+    { "key": "did", "type": "boolean", "label": "Completed" },
+    { "key": "minutes", "type": "number", "label": "Minutes", "optional": true },
+    { "key": "mood", "type": "enum", "label": "Mood", "optional": true },
+    { "key": "note", "type": "string", "label": "Note", "optional": true }
+  ],
+  "metrics": [
+    {
+      "key": "completion_rate",
+      "formula": "count(did=true)/count(did)",
+      "display": "Completion rate"
+    }
+  ],
+  "sdt_support": {
+    "autonomy": "Users choose which habits to track and can edit templates.",
+    "competence": "Progress is shown using user-defined metrics.",
+    "relatedness": "Sharing is optional and off by default."
+  }
+}

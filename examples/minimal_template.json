@@ -1,0 +1,9 @@
+{
+  "id": "learning-basic",
+  "name": "Learning Basic",
+  "domain": "learning",
+  "fields": [
+    { "key": "topic", "type": "string" },
+    { "key": "minutes", "type": "number", "optional": true }
+  ]
+}
