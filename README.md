@@ -18,6 +18,22 @@ SDT emphasizes:
 - **Relatedness**: optional, non-coercive connection
 
 This spec provides *structure without coercion*.
+## Non-coercive use requirements (SDT guardrails)
+To stay aligned with SDT's "structure, not control" philosophy, any implementation **must** include:
+- **Informed choice**: explain why a rule or template exists, and allow users to opt out or modify it.
+- **Transparent feedback**: show how progress is calculated and what data is used.
+- **Data minimization**: collect only what is needed for user-defined goals.
+- **No forced incentives**: avoid penalties, locks, or pressure tactics that reduce autonomy.
+- **Human override**: provide a clear path to pause or reset rules without punishment.
+
+## Data & privacy scope (implementation requirements)
+Implementations **must** clearly document the following, in user-facing language:
+- **Data categories**: what inputs are collected (e.g., task events, timestamps), and what is explicitly *not* collected.
+- **Purpose binding**: each data category must be tied to a user-defined goal or rule.
+- **Default posture**: no telemetry/analytics by default; opt-in only with a clear toggle.
+- **Retention & deletion**: how long data is kept and how users can delete or export it.
+- **Local vs. remote**: where data is stored/processed (on-device, local file, or server) and the tradeoffs.
+- **Third parties**: any external services or SDKs that receive data, with a short rationale.
 
 ## What this repo is
 ✅ Specification (JSON Schema)  
