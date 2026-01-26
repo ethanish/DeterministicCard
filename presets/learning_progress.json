@@ -1,0 +1,25 @@
+{
+  "schema_version": "0.1.0",
+  "id": "learning-progress-basic",
+  "name": "Learning Progress",
+  "domain": "learning",
+  "description": "Track learning sessions and reflections.",
+  "capture_modes": ["text", "button"],
+  "fields": [
+    { "key": "topic", "type": "string", "label": "Topic" },
+    { "key": "minutes", "type": "number", "label": "Minutes" },
+    { "key": "reflection", "type": "string", "label": "Reflection", "optional": true }
+  ],
+  "metrics": [
+    {
+      "key": "total_minutes",
+      "formula": "sum(minutes)",
+      "display": "Total minutes"
+    }
+  ],
+  "sdt_support": {
+    "autonomy": "Users choose topics and can edit the template.",
+    "competence": "Progress is shown via time invested.",
+    "relatedness": "Sharing is optional and off by default."
+  }
+}

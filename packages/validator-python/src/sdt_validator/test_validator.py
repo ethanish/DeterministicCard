@@ -22,10 +22,57 @@ def test_invalid_template_missing_required_fields():
         validate_template(bad)
 
 
+def test_invalid_template_metric_unknown_field():
+    template = load_json_file("presets/game_growth.json")
+    template["metrics"].append(
+        {
+            "key": "unknown_metric",
+            "formula": "sum(unknown_field)",
+            "display": "Unknown metric",
+        }
+    )
+    with pytest.raises(ValidationError) as exc_info:
+        validate_template(template)
+    assert "unknown field" in str(exc_info.value).lower()
+
+
 def test_invalid_rule_missing_conditions():
     bad = {"id": "r1", "template_id": "t1", "enabled": True}
     with pytest.raises(ValidationError):
         validate_rule(bad)
+
+
+def test_valid_rule_cross_reference():
+    template = load_json_file("presets/game_growth.json")
+    rule = {
+        "schema_version": "0.1.0",
+        "id": "r1",
+        "template_id": template["id"],
+        "enabled": True,
+        "conditions": [
+            {"type": "count", "field": "session_length", "value": 1}
+        ],
+        "effects": [
+            {"type": "nudge", "message": "Nice progress."}
+        ],
+    }
+    validate_rule(rule, template_obj=template)
+
+
+def test_invalid_rule_field_not_in_template():
+    template = load_json_file("presets/game_growth.json")
+    rule = {
+        "schema_version": "0.1.0",
+        "id": "r2",
+        "template_id": template["id"],
+        "enabled": True,
+        "conditions": [
+            {"type": "count", "field": "unknown_field", "value": 1}
+        ],
+    }
+    with pytest.raises(ValidationError) as exc_info:
+        validate_rule(rule, template_obj=template)
+    assert "condition[0].field" in str(exc_info.value).lower()
 
 
 def test_valid_agent_minimal():

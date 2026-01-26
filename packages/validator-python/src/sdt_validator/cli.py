@@ -36,7 +36,7 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument(
         "--template",
         default=None,
-        help="Path to template JSON file for cross-reference validation (only used when validating agents).",
+        help="Path to template JSON file for cross-reference validation (rule or agent).",
     )
     return p
 
@@ -52,18 +52,19 @@ def main(argv: list[str] | None = None) -> None:
 
     try:
         obj = load_json_file(json_path)
+        template_obj = None
+        if args.template:
+            template_path = Path(args.template)
+            if not template_path.exists():
+                print(f"Template file not found: {template_path}", file=sys.stderr)
+                raise SystemExit(2)
+            template_obj = load_json_file(template_path)
+
         if args.kind == "template":
             validate_template(obj, spec_dir=args.spec_dir)
         elif args.kind == "rule":
-            validate_rule(obj, spec_dir=args.spec_dir)
+            validate_rule(obj, template_obj=template_obj, spec_dir=args.spec_dir)
         else:  # agent
-            template_obj = None
-            if args.template:
-                template_path = Path(args.template)
-                if not template_path.exists():
-                    print(f"Template file not found: {template_path}", file=sys.stderr)
-                    raise SystemExit(2)
-                template_obj = load_json_file(template_path)
             validate_agent(obj, template_obj=template_obj, spec_dir=args.spec_dir)
 
         print("OK")

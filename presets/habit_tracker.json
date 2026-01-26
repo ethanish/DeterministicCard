@@ -1,0 +1,25 @@
+{
+  "schema_version": "0.1.0",
+  "id": "habit-tracker-basic",
+  "name": "Habit Tracker",
+  "domain": "habit",
+  "description": "Simple daily habit check-ins.",
+  "capture_modes": ["button", "text"],
+  "fields": [
+    { "key": "habit", "type": "string", "label": "Habit" },
+    { "key": "did", "type": "boolean", "label": "Completed" },
+    { "key": "notes", "type": "string", "label": "Notes", "optional": true }
+  ],
+  "metrics": [
+    {
+      "key": "completion_rate",
+      "formula": "count(did=true)/count(did)",
+      "display": "Completion rate"
+    }
+  ],
+  "sdt_support": {
+    "autonomy": "Users decide which habits to track and can edit fields.",
+    "competence": "Completion rates show user-defined progress.",
+    "relatedness": "No social features are required."
+  }
+}

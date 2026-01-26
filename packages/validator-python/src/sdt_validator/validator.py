@@ -2,12 +2,31 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, Optional
 
 from jsonschema import Draft202012Validator
 from referencing import Registry, Resource
+
+
+_METRIC_FUNC_NAMES = {
+    "sum",
+    "average",
+    "avg",
+    "count",
+    "min",
+    "max",
+}
+_METRIC_KEYWORDS = {
+    "true",
+    "false",
+    "and",
+    "or",
+    "not",
+}
+_IDENTIFIER_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_]*")
 
 
 @dataclass
@@ -88,14 +107,60 @@ def _validate(obj: Any, schema: Dict[str, Any], label: str, registry: Registry) 
         raise ValidationError(f"{label} failed schema validation.", rendered)
 
 
+def _extract_identifiers(formula: str) -> list[str]:
+    return _IDENTIFIER_RE.findall(formula)
+
+
+def _validate_metric_formulas(template_obj: Any) -> None:
+    metrics = template_obj.get("metrics", [])
+    if not metrics:
+        return
+
+    fields = {field.get("key") for field in template_obj.get("fields", []) if field.get("key")}
+    if not fields:
+        return
+
+    errors: list[str] = []
+    for idx, metric in enumerate(metrics):
+        formula = metric.get("formula")
+        if not formula or not isinstance(formula, str):
+            continue
+
+        unknowns: set[str] = set()
+        for ident in _extract_identifiers(formula):
+            if ident in fields:
+                continue
+            ident_lower = ident.lower()
+            if ident_lower in _METRIC_FUNC_NAMES or ident_lower in _METRIC_KEYWORDS:
+                continue
+            unknowns.add(ident)
+
+        if unknowns:
+            errors.append(
+                f"Metric[{idx}].formula references unknown fields {sorted(unknowns)}. "
+                f"Available fields: {sorted(fields) if fields else 'none'}"
+            )
+
+    if errors:
+        raise ValidationError("Template failed metric validation.", errors)
+
+
 def validate_template(template_obj: Any, *, spec_dir: Optional[str | Path] = None) -> None:
     schema, registry = _load_schema("template.schema.json", Path(spec_dir) if spec_dir else None)
     _validate(template_obj, schema, "Template", registry)
+    _validate_metric_formulas(template_obj)
 
 
-def validate_rule(rule_obj: Any, *, spec_dir: Optional[str | Path] = None) -> None:
+def validate_rule(
+    rule_obj: Any,
+    *,
+    template_obj: Optional[Any] = None,
+    spec_dir: Optional[str | Path] = None
+) -> None:
     schema, registry = _load_schema("rule.schema.json", Path(spec_dir) if spec_dir else None)
     _validate(rule_obj, schema, "Rule", registry)
+    if template_obj is not None:
+        _validate_rule_references(rule_obj, template_obj)
 
 
 def validate_agent(
@@ -170,3 +235,37 @@ def _validate_agent_references(agent_obj: Any, template_obj: Any) -> None:
     
     if errors:
         raise ValidationError("Agent failed cross-reference validation.", errors)
+
+
+def _validate_rule_references(rule_obj: Any, template_obj: Any) -> None:
+    """
+    Validate cross-references between rule and template.
+
+    - Validates that rule.template_id matches template.id
+    - Validates that conditions[].field exists in template.fields[].key
+    """
+    errors: list[str] = []
+
+    rule_template_id = rule_obj.get("template_id")
+    template_id = template_obj.get("id")
+
+    if rule_template_id != template_id:
+        errors.append(
+            f"Rule references template_id '{rule_template_id}', "
+            f"but provided template has id '{template_id}'"
+        )
+
+    template_fields = template_obj.get("fields", [])
+    valid_field_keys = {field.get("key") for field in template_fields if field.get("key")}
+
+    conditions = rule_obj.get("conditions", [])
+    for idx, condition in enumerate(conditions):
+        field = condition.get("field")
+        if field is not None and field not in valid_field_keys:
+            errors.append(
+                f"Condition[{idx}].field '{field}' does not exist in template. "
+                f"Available fields: {sorted(valid_field_keys) if valid_field_keys else 'none'}"
+            )
+
+    if errors:
+        raise ValidationError("Rule failed cross-reference validation.", errors)
