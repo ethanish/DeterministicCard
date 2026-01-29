@@ -31,8 +31,7 @@
                   "properties": {
                     "source": { "type": "string" },
                     "format": {
-                      "type": "string",
-                      "enum": ["text", "voice", "button", "auto"]
+                      "$ref": "common.schema.json#/$defs/capture_mode"
                     }
                   }
                 }

@@ -17,8 +17,7 @@
           "required": ["type"],
           "properties": {
             "type": {
-              "type": "string",
-              "enum": ["count", "streak", "threshold", "time_window"]
+              "$ref": "common.schema.json#/$defs/condition_type"
             },
             "field": { "type": "string" },
             "value": { "type": "number" },
@@ -34,8 +33,7 @@
           "required": ["type"],
           "properties": {
             "type": {
-              "type": "string",
-              "enum": ["nudge", "reward_candidate", "discount_candidate"]
+              "$ref": "common.schema.json#/$defs/effect_type"
             },
             "message": { "type": "string" }
           }
