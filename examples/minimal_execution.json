@@ -1,0 +1,9 @@
+{
+  "schema_version": "0.1.0",
+  "execution_id": "exec_001",
+  "project_id": "proj_001",
+  "workflow_id": "wf_daily",
+  "status": "running",
+  "inputs": {"focus": 3},
+  "context": {"client": "mobile", "timezone": "Asia/Seoul"}
+}

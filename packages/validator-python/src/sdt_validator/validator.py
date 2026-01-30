@@ -187,6 +187,26 @@ def validate_agent(
         _validate_agent_references(agent_obj, template_obj)
 
 
+def validate_project(project_obj: Any, *, spec_dir: Optional[str | Path] = None) -> None:
+    schema, registry = _load_schema("project.schema.json", Path(spec_dir) if spec_dir else None)
+    _validate(project_obj, schema, "Project", registry)
+
+
+def validate_execution(execution_obj: Any, *, spec_dir: Optional[str | Path] = None) -> None:
+    schema, registry = _load_schema("execution.schema.json", Path(spec_dir) if spec_dir else None)
+    _validate(execution_obj, schema, "Execution", registry)
+
+
+def validate_event(event_obj: Any, *, spec_dir: Optional[str | Path] = None) -> None:
+    schema, registry = _load_schema("event.schema.json", Path(spec_dir) if spec_dir else None)
+    _validate(event_obj, schema, "Event", registry)
+
+
+def validate_billing(billing_obj: Any, *, spec_dir: Optional[str | Path] = None) -> None:
+    schema, registry = _load_schema("billing.schema.json", Path(spec_dir) if spec_dir else None)
+    _validate(billing_obj, schema, "Billing", registry)
+
+
 def _validate_agent_references(agent_obj: Any, template_obj: Any) -> None:
     """
     Validate cross-references between agent and template.

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "execution.schema.json",
+  "title": "SDT Execution Specification",
+  "type": "object",
+  "required": ["schema_version", "execution_id", "project_id", "workflow_id", "status"],
+  "properties": {
+    "schema_version": { "$ref": "common.schema.json#/$defs/schema_version" },
+    "execution_id": { "$ref": "common.schema.json#/$defs/execution_id" },
+    "project_id": { "$ref": "common.schema.json#/$defs/project_id" },
+    "workflow_id": { "$ref": "common.schema.json#/$defs/workflow_id" },
+    "status": {
+      "type": "string",
+      "enum": ["queued", "running", "succeeded", "failed", "canceled"]
+    },
+    "inputs": { "type": "object" },
+    "context": {
+      "type": "object",
+      "properties": {
+        "client": { "type": "string" },
+        "timezone": { "type": "string" },
+        "session_id": { "type": "string" }
+      }
+    },
+    "started_at": { "$ref": "common.schema.json#/$defs/timestamp" },
+    "finished_at": { "$ref": "common.schema.json#/$defs/timestamp" },
+    "outputs": { "type": "object" },
+    "error": { "type": "string" }
+  }
+}

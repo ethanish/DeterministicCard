@@ -1,0 +1,10 @@
+{
+  "schema_version": "0.1.0",
+  "transaction_id": "txn_001",
+  "user_id": "user_123",
+  "type": "credit_spend",
+  "balance_delta": -5,
+  "reason": "query_choice_value",
+  "resource": {"event_id": "evt_001", "project_id": "proj_001"},
+  "timestamp": "2026-01-30T08:00:00Z"
+}

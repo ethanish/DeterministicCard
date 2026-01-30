@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "billing.schema.json",
+  "title": "SDT Billing Specification",
+  "type": "object",
+  "required": ["schema_version", "transaction_id", "user_id", "type", "balance_delta", "timestamp"],
+  "properties": {
+    "schema_version": { "$ref": "common.schema.json#/$defs/schema_version" },
+    "transaction_id": { "$ref": "common.schema.json#/$defs/transaction_id" },
+    "user_id": { "$ref": "common.schema.json#/$defs/user_id" },
+    "type": { "$ref": "common.schema.json#/$defs/credit_transaction_type" },
+    "balance_delta": { "type": "number" },
+    "currency": { "type": "string", "default": "credit" },
+    "reason": { "type": "string" },
+    "resource": {
+      "type": "object",
+      "properties": {
+        "event_id": { "$ref": "common.schema.json#/$defs/event_id" },
+        "project_id": { "$ref": "common.schema.json#/$defs/project_id" }
+      }
+    },
+    "timestamp": { "$ref": "common.schema.json#/$defs/timestamp" },
+    "metadata": { "type": "object" }
+  }
+}

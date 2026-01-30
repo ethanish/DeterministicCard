@@ -10,17 +10,21 @@ from .validator import (
     validate_rule,
     validate_template,
     validate_agent,
+    validate_project,
+    validate_execution,
+    validate_event,
+    validate_billing,
 )
 
 
 def _build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         prog="sdt-validate",
-        description="Validate SDT template/rule/agent JSON files against the spec schemas.",
+        description="Validate SDT schema JSON files against the spec schemas.",
     )
     p.add_argument(
         "kind",
-        choices=["template", "rule", "agent"],
+        choices=["template", "rule", "agent", "project", "execution", "event", "billing"],
         help="Type of JSON to validate.",
     )
     p.add_argument(
@@ -30,7 +34,7 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument(
         "--spec-dir",
         default=None,
-        help="Path to spec directory containing template.schema.json, rule.schema.json, and agent.schema.json. "
+        help="Path to spec directory containing schema JSON files. "
              "Overrides SDT_SPEC_DIR if provided.",
     )
     p.add_argument(
@@ -64,8 +68,16 @@ def main(argv: list[str] | None = None) -> None:
             validate_template(obj, spec_dir=args.spec_dir)
         elif args.kind == "rule":
             validate_rule(obj, template_obj=template_obj, spec_dir=args.spec_dir)
-        else:  # agent
+        elif args.kind == "agent":
             validate_agent(obj, template_obj=template_obj, spec_dir=args.spec_dir)
+        elif args.kind == "project":
+            validate_project(obj, spec_dir=args.spec_dir)
+        elif args.kind == "execution":
+            validate_execution(obj, spec_dir=args.spec_dir)
+        elif args.kind == "event":
+            validate_event(obj, spec_dir=args.spec_dir)
+        else:  # billing
+            validate_billing(obj, spec_dir=args.spec_dir)
 
         print("OK")
     except ValidationError as e:

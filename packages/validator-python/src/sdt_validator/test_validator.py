@@ -2,7 +2,17 @@ from pathlib import Path
 
 import pytest
 
-from sdt_validator import validate_template, validate_rule, validate_agent, load_json_file, ValidationError
+from sdt_validator import (
+    validate_template,
+    validate_rule,
+    validate_agent,
+    validate_project,
+    validate_execution,
+    validate_event,
+    validate_billing,
+    load_json_file,
+    ValidationError,
+)
 
 
 def test_validate_game_growth_template_from_presets():
@@ -315,3 +325,72 @@ def test_valid_agent_with_template_sdt_consistency():
     }
     # Should pass - agent can extend template's SDT support
     validate_agent(agent, template_obj=template)
+
+
+def test_valid_project_minimal():
+    project = {
+        "schema_version": "0.1.0",
+        "project_id": "proj_1",
+        "name": "Test Project",
+        "owner_id": "user_1",
+        "agents": ["agent_a"],
+        "workflows": [
+            {
+                "workflow_id": "wf_1",
+                "trigger": {"type": "manual"},
+                "steps": [
+                    {"step_id": "s1", "agent_id": "agent_a", "action": "capture"}
+                ],
+            }
+        ],
+    }
+    validate_project(project)
+
+
+def test_invalid_project_missing_agents():
+    bad = {
+        "schema_version": "0.1.0",
+        "project_id": "proj_1",
+        "name": "Test Project",
+        "owner_id": "user_1",
+        "workflows": [],
+    }
+    with pytest.raises(ValidationError):
+        validate_project(bad)
+
+
+def test_valid_execution_minimal():
+    execution = {
+        "schema_version": "0.1.0",
+        "execution_id": "exec_1",
+        "project_id": "proj_1",
+        "workflow_id": "wf_1",
+        "status": "queued",
+    }
+    validate_execution(execution)
+
+
+def test_valid_event_minimal():
+    event = {
+        "schema_version": "0.1.0",
+        "event_id": "evt_1",
+        "event_type": "choice_made",
+        "user_id": "user_1",
+        "project_id": "proj_1",
+        "timestamp": "2026-01-30T08:00:00Z",
+        "choice": {"screen": "q1", "value": "option_a"},
+        "privacy": {"consent": True},
+    }
+    validate_event(event)
+
+
+def test_valid_billing_minimal():
+    billing = {
+        "schema_version": "0.1.0",
+        "transaction_id": "txn_1",
+        "user_id": "user_1",
+        "type": "credit_spend",
+        "balance_delta": -5,
+        "timestamp": "2026-01-30T08:00:00Z",
+    }
+    validate_billing(billing)

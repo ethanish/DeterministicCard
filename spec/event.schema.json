@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "event.schema.json",
+  "title": "SDT Event Specification",
+  "type": "object",
+  "required": ["schema_version", "event_id", "event_type", "user_id", "project_id", "timestamp"],
+  "properties": {
+    "schema_version": { "$ref": "common.schema.json#/$defs/schema_version" },
+    "event_id": { "$ref": "common.schema.json#/$defs/event_id" },
+    "event_type": { "$ref": "common.schema.json#/$defs/event_type" },
+    "user_id": { "$ref": "common.schema.json#/$defs/user_id" },
+    "project_id": { "$ref": "common.schema.json#/$defs/project_id" },
+    "timestamp": { "$ref": "common.schema.json#/$defs/timestamp" },
+    "choice": {
+      "type": "object",
+      "properties": {
+        "screen": { "type": "string" },
+        "field": { "type": "string" },
+        "value": {}
+      }
+    },
+    "field": { "type": "string" },
+    "value": {},
+    "client": {
+      "type": "object",
+      "properties": {
+        "platform": { "type": "string" },
+        "app_version": { "type": "string" },
+        "device_id": { "type": "string" }
+      }
+    },
+    "privacy": {
+      "type": "object",
+      "properties": {
+        "consent": { "type": "boolean" },
+        "minimized": { "type": "boolean" }
+      }
+    }
+  }
+}

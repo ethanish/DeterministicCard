@@ -1,0 +1,24 @@
+{
+  "schema_version": "0.1.0",
+  "project_id": "proj_001",
+  "name": "Learning Sprint",
+  "owner_id": "user_123",
+  "agents": ["agent_focus"],
+  "workflows": [
+    {
+      "workflow_id": "wf_daily",
+      "trigger": {"type": "time_interval", "cron": "0 20 * * *"},
+      "steps": [
+        {
+          "step_id": "step_capture",
+          "agent_id": "agent_focus",
+          "action": "capture"
+        }
+      ]
+    }
+  ],
+  "policies": {
+    "retention_days": 30,
+    "minimize_fields": true
+  }
+}

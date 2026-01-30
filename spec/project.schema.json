@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "project.schema.json",
+  "title": "SDT Project Specification",
+  "type": "object",
+  "required": ["schema_version", "project_id", "name", "owner_id", "agents", "workflows"],
+  "properties": {
+    "schema_version": { "$ref": "common.schema.json#/$defs/schema_version" },
+    "project_id": { "$ref": "common.schema.json#/$defs/project_id" },
+    "name": { "$ref": "common.schema.json#/$defs/name" },
+    "owner_id": { "$ref": "common.schema.json#/$defs/user_id" },
+    "description": { "type": "string" },
+    "agents": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "minItems": 1
+    },
+    "workflows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["workflow_id", "trigger", "steps"],
+        "properties": {
+          "workflow_id": { "$ref": "common.schema.json#/$defs/workflow_id" },
+          "name": { "type": "string" },
+          "trigger": {
+            "type": "object",
+            "required": ["type"],
+            "properties": {
+              "type": { "$ref": "common.schema.json#/$defs/trigger_type" },
+              "cron": { "type": "string" },
+              "event_type": { "$ref": "common.schema.json#/$defs/event_type" },
+              "condition_id": { "type": "string" }
+            }
+          },
+          "steps": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["step_id", "agent_id", "action"],
+              "properties": {
+                "step_id": { "$ref": "common.schema.json#/$defs/step_id" },
+                "agent_id": { "type": "string", "minLength": 1 },
+                "action": { "$ref": "common.schema.json#/$defs/action_type" },
+                "depends_on": {
+                  "type": "array",
+                  "items": { "$ref": "common.schema.json#/$defs/step_id" }
+                },
+                "config": { "type": "object" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "policies": {
+      "type": "object",
+      "properties": {
+        "retention_days": { "type": "integer", "minimum": 0 },
+        "minimize_fields": { "type": "boolean", "default": true },
+        "rate_limit_per_minute": { "type": "integer", "minimum": 1 }
+      }
+    }
+  }
+}

@@ -57,6 +57,56 @@
           "description": "Description of how the template or agent supports user relatedness."
         }
       }
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable identifier for a project."
+    },
+    "user_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable identifier for a user."
+    },
+    "workflow_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "step_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "execution_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "event_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "transaction_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "trigger_type": {
+      "type": "string",
+      "enum": ["time_interval", "event", "manual", "condition"]
+    },
+    "action_type": {
+      "type": "string",
+      "enum": ["capture", "suggest", "analyze", "remind", "custom"]
+    },
+    "event_type": {
+      "type": "string",
+      "enum": ["choice_made", "field_changed", "session_end"]
+    },
+    "credit_transaction_type": {
+      "type": "string",
+      "enum": ["credit_spend", "credit_grant", "refund"]
     }
   }
 }

@@ -1,0 +1,11 @@
+{
+  "schema_version": "0.1.0",
+  "event_id": "evt_001",
+  "event_type": "choice_made",
+  "user_id": "user_123",
+  "project_id": "proj_001",
+  "timestamp": "2026-01-30T08:00:00Z",
+  "choice": {"screen": "q1", "value": "option_b"},
+  "client": {"platform": "ios", "app_version": "1.2.0"},
+  "privacy": {"consent": true, "minimized": true}
+}

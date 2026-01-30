@@ -4,6 +4,10 @@ from .validator import (
     validate_template,
     validate_rule,
     validate_agent,
+    validate_project,
+    validate_execution,
+    validate_event,
+    validate_billing,
 )
 
 __all__ = [
@@ -12,4 +16,8 @@ __all__ = [
     "validate_template",
     "validate_rule",
     "validate_agent",
+    "validate_project",
+    "validate_execution",
+    "validate_event",
+    "validate_billing",
 ]
