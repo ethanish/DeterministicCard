@@ -190,6 +190,7 @@ def validate_agent(
 def validate_project(project_obj: Any, *, spec_dir: Optional[str | Path] = None) -> None:
     schema, registry = _load_schema("project.schema.json", Path(spec_dir) if spec_dir else None)
     _validate(project_obj, schema, "Project", registry)
+    _validate_project_workflow_dag(project_obj)
 
 
 def validate_execution(execution_obj: Any, *, spec_dir: Optional[str | Path] = None) -> None:
@@ -200,6 +201,7 @@ def validate_execution(execution_obj: Any, *, spec_dir: Optional[str | Path] = N
 def validate_event(event_obj: Any, *, spec_dir: Optional[str | Path] = None) -> None:
     schema, registry = _load_schema("event.schema.json", Path(spec_dir) if spec_dir else None)
     _validate(event_obj, schema, "Event", registry)
+    _validate_event_type_fields(event_obj)
 
 
 def validate_billing(billing_obj: Any, *, spec_dir: Optional[str | Path] = None) -> None:
@@ -289,3 +291,72 @@ def _validate_rule_references(rule_obj: Any, template_obj: Any) -> None:
 
     if errors:
         raise ValidationError("Rule failed cross-reference validation.", errors)
+
+
+def _validate_project_workflow_dag(project_obj: Any) -> None:
+    errors: list[str] = []
+    workflows = project_obj.get("workflows", [])
+    for w_idx, workflow in enumerate(workflows):
+        steps = workflow.get("steps", [])
+        step_ids = [step.get("step_id") for step in steps if step.get("step_id")]
+        step_id_set = set(step_ids)
+        if len(step_ids) != len(step_id_set):
+            errors.append(f"Workflow[{w_idx}] has duplicate step_id values.")
+            continue
+
+        edges: dict[str, list[str]] = {sid: [] for sid in step_id_set}
+        for s_idx, step in enumerate(steps):
+            step_id = step.get("step_id")
+            if not step_id:
+                continue
+            for dep in step.get("depends_on", []) or []:
+                if dep not in step_id_set:
+                    errors.append(
+                        f"Workflow[{w_idx}].steps[{s_idx}].depends_on references unknown step_id '{dep}'."
+                    )
+                    continue
+                edges[dep].append(step_id)
+
+        visiting: set[str] = set()
+        visited: set[str] = set()
+
+        def dfs(node: str) -> bool:
+            if node in visiting:
+                return True
+            if node in visited:
+                return False
+            visiting.add(node)
+            for nxt in edges.get(node, []):
+                if dfs(nxt):
+                    return True
+            visiting.remove(node)
+            visited.add(node)
+            return False
+
+        for node in step_id_set:
+            if dfs(node):
+                errors.append(f"Workflow[{w_idx}] has a dependency cycle.")
+                break
+
+    if errors:
+        raise ValidationError("Project failed workflow DAG validation.", errors)
+
+
+def _validate_event_type_fields(event_obj: Any) -> None:
+    event_type = event_obj.get("event_type")
+    errors: list[str] = []
+
+    if event_type == "choice_made":
+        if not isinstance(event_obj.get("choice"), dict):
+            errors.append("Event.choice must be provided for event_type 'choice_made'.")
+    elif event_type == "field_changed":
+        if event_obj.get("field") is None:
+            errors.append("Event.field must be provided for event_type 'field_changed'.")
+        if "value" not in event_obj:
+            errors.append("Event.value must be provided for event_type 'field_changed'.")
+    elif event_type == "session_end":
+        # No extra required fields currently.
+        pass
+
+    if errors:
+        raise ValidationError("Event failed event_type field validation.", errors)

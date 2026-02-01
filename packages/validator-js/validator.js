@@ -48,6 +48,90 @@ function validateAgainst(schemaFile, obj, label, specDir) {
   }
 }
 
+function validateProjectWorkflowDag(projectObj) {
+  const errors = [];
+  const workflows = projectObj.workflows || [];
+  workflows.forEach((workflow, wIdx) => {
+    const steps = workflow.steps || [];
+    const stepIds = steps.map((s) => s.step_id).filter(Boolean);
+    const stepIdSet = new Set(stepIds);
+    if (stepIds.length !== stepIdSet.size) {
+      errors.push(`Workflow[${wIdx}] has duplicate step_id values.`);
+      return;
+    }
+
+    const edges = {};
+    stepIds.forEach((id) => {
+      edges[id] = [];
+    });
+    steps.forEach((step, sIdx) => {
+      const stepId = step.step_id;
+      if (!stepId) return;
+      const deps = step.depends_on || [];
+      deps.forEach((dep) => {
+        if (!stepIdSet.has(dep)) {
+          errors.push(
+            `Workflow[${wIdx}].steps[${sIdx}].depends_on references unknown step_id '${dep}'.`
+          );
+          return;
+        }
+        edges[dep].push(stepId);
+      });
+    });
+
+    const visiting = new Set();
+    const visited = new Set();
+    function dfs(node) {
+      if (visiting.has(node)) return true;
+      if (visited.has(node)) return false;
+      visiting.add(node);
+      for (const nxt of edges[node] || []) {
+        if (dfs(nxt)) return true;
+      }
+      visiting.delete(node);
+      visited.add(node);
+      return false;
+    }
+
+    for (const node of stepIdSet) {
+      if (dfs(node)) {
+        errors.push(`Workflow[${wIdx}] has a dependency cycle.`);
+        break;
+      }
+    }
+  });
+
+  if (errors.length) {
+    const detail = `\n${errors.map((e) => `- ${e}`).join("\n")}`;
+    throw new Error(`Project failed workflow DAG validation.${detail}`);
+  }
+}
+
+function validateEventTypeFields(eventObj) {
+  const errors = [];
+  const eventType = eventObj.event_type;
+
+  if (eventType === "choice_made") {
+    if (typeof eventObj.choice !== "object" || eventObj.choice === null) {
+      errors.push("Event.choice must be provided for event_type 'choice_made'.");
+    }
+  } else if (eventType === "field_changed") {
+    if (eventObj.field == null) {
+      errors.push("Event.field must be provided for event_type 'field_changed'.");
+    }
+    if (!Object.prototype.hasOwnProperty.call(eventObj, "value")) {
+      errors.push("Event.value must be provided for event_type 'field_changed'.");
+    }
+  } else if (eventType === "session_end") {
+    // No extra required fields currently.
+  }
+
+  if (errors.length) {
+    const detail = `\n${errors.map((e) => `- ${e}`).join("\n")}`;
+    throw new Error(`Event failed event_type field validation.${detail}`);
+  }
+}
+
 export function validateTemplate(templateObj, { specDir } = {}) {
   validateAgainst("template.schema.json", templateObj, "Template", specDir);
 }
@@ -62,6 +146,7 @@ export function validateAgent(agentObj, { specDir } = {}) {
 
 export function validateProject(projectObj, { specDir } = {}) {
   validateAgainst("project.schema.json", projectObj, "Project", specDir);
+  validateProjectWorkflowDag(projectObj);
 }
 
 export function validateExecution(executionObj, { specDir } = {}) {
@@ -70,6 +155,7 @@ export function validateExecution(executionObj, { specDir } = {}) {
 
 export function validateEvent(eventObj, { specDir } = {}) {
   validateAgainst("event.schema.json", eventObj, "Event", specDir);
+  validateEventTypeFields(eventObj);
 }
 
 export function validateBilling(billingObj, { specDir } = {}) {

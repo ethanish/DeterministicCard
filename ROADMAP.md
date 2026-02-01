@@ -1,6 +1,6 @@
 # DeterministicCard Roadmap
 
-Last updated: 2026-01-25
+Last updated: 2026-02-01
 
 This roadmap focuses on the SDT-aligned spec, presets, validators, and documentation.
 It does not cover production servers, enforcement logic, or monetization systems.
@@ -13,11 +13,12 @@ It does not cover production servers, enforcement logic, or monetization systems
 ## Milestones
 
 ### Now -> 2026-03 (v0.1: Foundation hardening)
-- Finalize JSON Schemas (`spec/`) with shared definitions and a clear version field.
-- Add minimal examples in `examples/` (template, rule, agent, and a full set).
+- Document the new automation/transport/billing schemas in README and usage docs.
+- Add full examples for project/execution/event/billing alongside existing full examples.
+- Add validator tests for the new schemas (JS + Python).
+- Add non-schema validation (e.g., workflow DAG checks, event-type-specific fields).
 - Expand presets to include learning and habit domains alongside existing ones.
-- Align validator behavior in `packages/validator-js` and `packages/validator-python`.
-- Update a minimal usage flow.
+- Update a minimal usage flow (including new schemas).
 
 ### 2026-04 -> 2026-06 (v0.2: Interop & tooling)
 - Define schema versioning and deprecation policy (SemVer for specs).

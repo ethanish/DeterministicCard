@@ -394,3 +394,77 @@ def test_valid_billing_minimal():
         "timestamp": "2026-01-30T08:00:00Z",
     }
     validate_billing(billing)
+
+
+def test_invalid_project_workflow_cycle():
+    project = {
+        "schema_version": "0.1.0",
+        "project_id": "proj_cycle",
+        "name": "Cyclic Project",
+        "owner_id": "user_1",
+        "agents": ["agent_a"],
+        "workflows": [
+            {
+                "workflow_id": "wf_1",
+                "trigger": {"type": "manual"},
+                "steps": [
+                    {"step_id": "s1", "agent_id": "agent_a", "action": "capture", "depends_on": ["s2"]},
+                    {"step_id": "s2", "agent_id": "agent_a", "action": "capture", "depends_on": ["s1"]},
+                ],
+            }
+        ],
+    }
+    with pytest.raises(ValidationError) as exc_info:
+        validate_project(project)
+    assert "cycle" in str(exc_info.value).lower()
+
+
+def test_invalid_project_unknown_dependency():
+    project = {
+        "schema_version": "0.1.0",
+        "project_id": "proj_dep",
+        "name": "Bad Dep Project",
+        "owner_id": "user_1",
+        "agents": ["agent_a"],
+        "workflows": [
+            {
+                "workflow_id": "wf_1",
+                "trigger": {"type": "manual"},
+                "steps": [
+                    {"step_id": "s1", "agent_id": "agent_a", "action": "capture", "depends_on": ["missing"]},
+                ],
+            }
+        ],
+    }
+    with pytest.raises(ValidationError) as exc_info:
+        validate_project(project)
+    assert "unknown step_id" in str(exc_info.value).lower()
+
+
+def test_invalid_event_choice_made_missing_choice():
+    event = {
+        "schema_version": "0.1.0",
+        "event_id": "evt_2",
+        "event_type": "choice_made",
+        "user_id": "user_1",
+        "project_id": "proj_1",
+        "timestamp": "2026-01-30T08:00:00Z",
+    }
+    with pytest.raises(ValidationError) as exc_info:
+        validate_event(event)
+    assert "choice" in str(exc_info.value).lower()
+
+
+def test_invalid_event_field_changed_missing_field_value():
+    event = {
+        "schema_version": "0.1.0",
+        "event_id": "evt_3",
+        "event_type": "field_changed",
+        "user_id": "user_1",
+        "project_id": "proj_1",
+        "timestamp": "2026-01-30T08:00:00Z",
+    }
+    with pytest.raises(ValidationError) as exc_info:
+        validate_event(event)
+    msg = str(exc_info.value).lower()
+    assert "field" in msg or "value" in msg
