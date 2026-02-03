@@ -29,6 +29,16 @@ To stay aligned with SDT's "structure, not control" philosophy, any implementati
 ## Schema version
 All template, rule, and agent JSON files must include `schema_version` (SemVer, e.g. `0.1.0`).
 
+## Backend implementation notes
+This repo defines schemas and validators only. A separate backend MVP has been prototyped
+in `/Users/ish/PROJECTS/DeterministicCard-backend` to validate and store:
+- Projects (project.schema.json)
+- Events (event.schema.json)
+- Executions (execution.schema.json)
+- Billing transactions (billing.schema.json)
+
+The backend is not part of this repo; it is referenced here for tracking purposes.
+
 ## Data & privacy scope (implementation requirements)
 Implementations **must** clearly document the following, in user-facing language:
 - **Data categories**: what inputs are collected (e.g., task events, timestamps), and what is explicitly *not* collected.

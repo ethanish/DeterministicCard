@@ -20,6 +20,9 @@ It does not cover production servers, enforcement logic, or monetization systems
 - Expand presets to include learning and habit domains alongside existing ones.
 - Update a minimal usage flow (including new schemas).
 
+### Backend (out of scope for this repo)
+- Track MVP backend progress in /Users/ish/PROJECTS/DeterministicCard-backend (separate repo).
+
 ### 2026-04 -> 2026-06 (v0.2: Interop & tooling)
 - Define schema versioning and deprecation policy (SemVer for specs).
 - Add validator test suites and CI to validate all examples and presets.
